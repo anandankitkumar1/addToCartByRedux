@@ -4,14 +4,33 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { useDispatch } from 'react-redux';
 import CardData from "./CardsData";
-import {add} from "../redux/action/action"
+import { useSelector } from 'react-redux';
+import { del, add, delOne } from "../redux/action/action";
 export default function Cards() {
-    const [data, setData] = useState(CardData);
     const dispatch = useDispatch();
-    const send = (ele) =>{
+  
+    
+    const send = (ele) => {
         // console.log(e);
-            dispatch(add(ele))
+        dispatch(add(ele))
     }
+    const getData = useSelector((state) => state.cartReducer.carts);
+    const [data, setData] = useState(CardData);
+    console.log(getData);
+    let ck = (id)=>{
+        const object = getData.find(obj => obj.id == id);
+      if(object){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+
+    const remove = (item)=>{
+        dispatch(delOne(item))
+      }
+    
     return (
         <div className='container mt-3'>
             <h2 className='text-center '>Add to cart Project</h2>
@@ -27,7 +46,13 @@ export default function Cards() {
                                         Price : ₹ {ele.price}
                                     </Card.Text>
                                     <div className='button_div d-flex justify-content-center'>
-                                        <Button variant="primary" onClick={()=>send(ele)} className='col-lg-12'>Add to Cart</Button>
+                                        {ck(ele.id) ?     <div className='mt-5 d-flex justify-content-between align-items-center' style={{ width: 100, cursor: "pointer", background: "#ddd", color: "#111" }}>
+                                                        <span style={{ fontSize: 24 }} onClick={ele.qnty <=1 ? ()=>{ dispatch(del(ele.id))} : ()=>remove(ele)}>-</span>
+                                                        <span style={{ fontSize: 22 }}></span>
+                                                        <span style={{ fontSize: 24 }}  onClick={()=>send(ele)}>+</span>
+
+                                                    </div> : <Button variant="primary" onClick={() => send(ele)} className='col-lg-12'>Add to Cart</Button>}
+                                        
                                     </div>
 
                                 </Card.Body>
